@@ -31,6 +31,14 @@ struct NodeView: View {
             Text(try! AttributedString(markdown: node.narrative,
                                        options: AttributedString.MarkdownParsingOptions(interpretedSyntax:
                                                                                               .inlineOnlyPreservingWhitespace)))
+            .onAppear{
+                // update the visits count for this node
+                Task{
+                    try await db!.transaction{ core in
+                        try core.query("UPDATE Node SET visits = Node.visits + 1 WHERE node_id = ?", currentNodeId)
+                    }
+                }
+            }
         } else {
             Text("Node with id \(currentNodeId) not found; directed graph has a gap.")
         }
