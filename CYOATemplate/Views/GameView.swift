@@ -27,7 +27,7 @@ struct GameView: View {
         return notesVisitersStats.results.first?["visitedNodCount"]?.intValue ?? 0
     }
     
-    var visitedNodes: Int {
+    var totalNodes: Int {
         return totalNodeStats.results.first?["TotalNodCount"]?.intValue ?? 0
     }
     

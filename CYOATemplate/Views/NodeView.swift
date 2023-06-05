@@ -26,7 +26,7 @@ struct NodeView: View {
     // The user interface
     var body: some View {
         if let node = nodes.results.first {
-
+            
             VStack {
                 
                 Divider()
@@ -35,8 +35,8 @@ struct NodeView: View {
                 // Show a Text view, but render Markdown syntax, preserving newline characters
                 Text(try! AttributedString(markdown: node.narrative,
                                            options: AttributedString.MarkdownParsingOptions(interpretedSyntax:
-                                                                                                  .inlineOnlyPreservingWhitespace)))
-                .onAppear{
+                                                .inlineOnlyPreservingWhitespace)))
+                .onAppear {
                     // update the visits count for this node
                     Task{
                         try await db!.transaction{ core in
@@ -44,12 +44,18 @@ struct NodeView: View {
                         }
                     }
                 }
+                .onChange(of: currentNodeId) { newNodeId in
+                    Task{
+                        try await db!.transaction{ core in
+                            try core.query("UPDATE Node SET visits = Node.visits + 1 WHERE node_id = ?", newNodeId)
+                        }
+                    }
+                }
             } else {
                 Text("Node with id \(currentNodeId) not found; directed graph has a gap.")
             }
         }
-
-            }
+    }
             
     
     // MARK: Initializer
