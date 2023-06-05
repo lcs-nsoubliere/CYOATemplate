@@ -38,17 +38,11 @@ struct NodeView: View {
                                                 .inlineOnlyPreservingWhitespace)))
                 .onAppear {
                     // update the visits count for this node
-                    Task{
-                        try await db!.transaction{ core in
-                            try core.query("UPDATE Node SET visits = Node.visits + 1 WHERE node_id = ?", currentNodeId)
-                        }
+                   updateVisitCount(forNodeWithId: currentNodeId)
                     }
                 }
                 .onChange(of: currentNodeId) { newNodeId in
-                    Task{
-                        try await db!.transaction{ core in
-                            try core.query("UPDATE Node SET visits = Node.visits + 1 WHERE node_id = ?", newNodeId)
-                        }
+                    updateVisitCount(forNodeWithId: newNodeId)
                     }
                 }
             } else {
@@ -75,6 +69,14 @@ struct NodeView: View {
         
     }
 
+    // MARK: Functions
+    
+    func updateVisitCount(forNodeWithId id: Int) {
+        Task{
+            try await db!.transaction{ core in
+                try core.query("UPDATE Node SET visits = Node.visits + 1 WHERE node_id = ?", id)
+            }
+    }
     
 }
 
