@@ -10,10 +10,10 @@ import SwiftUI
 
 struct GameView: View {
     
-    // how many nodes have been visited
-    @BlackbirdLiveQuery(tableName: "Node", { db in
-        try await db.query("SELECT COUNT(*) FROM Node WHERE Node.visits > 0")
-    })var notesVisitersStats
+//    // how many nodes have been visited
+//    @BlackbirdLiveQuery(tableName: "Node", { db in
+//        try await db.query("SELECT COUNT(*) AS VisitedNodeCount FROM Node WHERE Node.visits > 0")
+//    })var notesVisitersStats
     
     @BlackbirdLiveQuery(tableName: "Node", { db in
         try await db.query("SELECT COUNT(*) AS TotalNodeCount FROM Node")
@@ -23,19 +23,19 @@ struct GameView: View {
     @State var currentNodeId: Int = 1
     
     // How the actual int value for now many nots have been visited
-    var visitedNodes: Int {
-        return notesVisitersStats.results.first?["visitedNodCount"]?.intValue ?? 0
-    }
+//    var visitedNodes: Int {
+//        return notesVisitersStats.results.first?["VisitedNodeCount"]?.intValue ?? 0
+//    }
     
     var totalNodes: Int {
-        return totalNodeStats.results.first?["TotalNodCount"]?.intValue ?? 0
+        return totalNodeStats.results.first?["TotalNodeCount"]?.intValue ?? 0
     }
     
     // MARK: Computed properties
     var body: some View {
         VStack(spacing: 10) {
             
-            Text("A total of \(visitedNodes) nodes have been in this story")
+//            Text("A total of \(visitedNodes) nodes have been in this story")
             
             Divider()
             HStack {
