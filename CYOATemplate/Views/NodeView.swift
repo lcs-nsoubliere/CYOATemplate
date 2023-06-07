@@ -14,7 +14,7 @@ struct NodeView: View {
     
     // The id of the node we are trying to view
     let currentNodeId: Int
-
+    
     // Needed to query database
     @Environment(\.blackbirdDatabase) var db: Blackbird.Database?
     
@@ -26,15 +26,30 @@ struct NodeView: View {
     // The user interface
     var body: some View {
         if let node = nodes.results.first {
-
-            // Show a Text view, but render Markdown syntax, preserving newline characters
-            Text(try! AttributedString(markdown: node.narrative,
-                                       options: AttributedString.MarkdownParsingOptions(interpretedSyntax:
-                                                                                              .inlineOnlyPreservingWhitespace)))
+            
+            VStack {
+                
+                Divider()
+                Text("Node visited \(node.visits) times")
+                Divider()
+                // Show a Text view, but render Markdown syntax, preserving newline characters
+                Text(try! AttributedString(markdown: node.narrative,
+                                           options: AttributedString.MarkdownParsingOptions(interpretedSyntax:
+                                                .inlineOnlyPreservingWhitespace)))
+            }
+            .onAppear {
+                // update the visits count for this node
+                updateVisitCount(forNodeWithId: currentNodeId)
+            }
+            .onChange(of: currentNodeId) { newNodeId in
+                updateVisitCount(forNodeWithId: newNodeId)
+            }
         } else {
             Text("Node with id \(currentNodeId) not found; directed graph has a gap.")
+            
         }
     }
+    
     
     // MARK: Initializer
     init(currentNodeId: Int) {
@@ -45,24 +60,33 @@ struct NodeView: View {
         //       in the Node table
         _nodes = BlackbirdLiveModels({ db in
             try await Node.read(from: db,
-                                    sqlWhere: "node_id = ?", "\(currentNodeId)")
+                                sqlWhere: "node_id = ?", "\(currentNodeId)")
         })
         
         // Set the node we are trying to view
         self.currentNodeId = currentNodeId
         
     }
-
     
+    // MARK: Functions
+    
+    func updateVisitCount(forNodeWithId id: Int) {
+        Task{
+            try await db!.transaction{ core in
+                try core.query("UPDATE Node SET visits = Node.visits + 1 WHERE node_id = ?", id)
+            }
+        }
+        
+    }
 }
 
 struct NodeView_Previews: PreviewProvider {
     
     static var previews: some View {
-
+        
         NodeView(currentNodeId: 1)
         // Make the database available to all other view through the environment
-        .environment(\.blackbirdDatabase, AppDatabase.instance)
-
+            .environment(\.blackbirdDatabase, AppDatabase.instance)
+        
     }
 }
