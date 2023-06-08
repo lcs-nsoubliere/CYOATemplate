@@ -10,6 +10,7 @@ import SwiftUI
 
 struct NodeView: View {
     
+    
     // MARK: Stored properties
     
     // The id of the node we are trying to view
@@ -25,28 +26,30 @@ struct NodeView: View {
     
     // The user interface
     var body: some View {
-        if let node = nodes.results.first {
-            
-            VStack {
+        NavigationView {
+            if let node = nodes.results.first {
                 
-                Divider()
-                Text("Node visited \(node.visits) times")
-                Divider()
-                // Show a Text view, but render Markdown syntax, preserving newline characters
-                Text(try! AttributedString(markdown: node.narrative,
-                                           options: AttributedString.MarkdownParsingOptions(interpretedSyntax:
-                                                .inlineOnlyPreservingWhitespace)))
+                VStack {
+                    
+                    Divider()
+                    Text("Node visited \(node.visits) times")
+                    Divider()
+                    // Show a Text view, but render Markdown syntax, preserving newline characters
+                    Text(try! AttributedString(markdown: node.narrative,
+                                               options: AttributedString.MarkdownParsingOptions(interpretedSyntax:
+                                                    .inlineOnlyPreservingWhitespace)))
+                }
+                .onAppear {
+                    // update the visits count for this node
+                    updateVisitCount(forNodeWithId: currentNodeId)
+                }
+                .onChange(of: currentNodeId) { newNodeId in
+                    updateVisitCount(forNodeWithId: newNodeId)
+                }
+            } else {
+                Text("Node with id \(currentNodeId) not found; directed graph has a gap.")
+                
             }
-            .onAppear {
-                // update the visits count for this node
-                updateVisitCount(forNodeWithId: currentNodeId)
-            }
-            .onChange(of: currentNodeId) { newNodeId in
-                updateVisitCount(forNodeWithId: newNodeId)
-            }
-        } else {
-            Text("Node with id \(currentNodeId) not found; directed graph has a gap.")
-            
         }
     }
     

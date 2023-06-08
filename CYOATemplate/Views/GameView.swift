@@ -10,6 +10,9 @@ import SwiftUI
 
 struct GameView: View {
     
+   
+//    .contentShape(Rectangle())
+    
     // how many nodes have been visited
     @BlackbirdLiveQuery(tableName: "Node", { db in
         try await db.query("SELECT COUNT(*) AS VisitedNodeCount FROM Node WHERE Node.visits > 0")
@@ -34,6 +37,7 @@ struct GameView: View {
     // MARK: Computed properties
     var body: some View {
         VStack(spacing: 10) {
+           
             
 //            Text("A total of \(visitedNodes) nodes have been in this story")
             

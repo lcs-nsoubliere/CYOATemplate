@@ -45,6 +45,7 @@ struct EdgesView: View {
                             .multilineTextAlignment(.trailing)
                             .onTapGesture {
                                 currentNodeId = currentEdge.to_node_id
+                                currentNodeId = 1
                             }
 
                     }
