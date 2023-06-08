@@ -28,7 +28,7 @@ struct NodeView: View {
         if let node = nodes.results.first {
             
             VStack {
-                
+                  ScrollView {
                 Divider()
                 Text("Node visited \(node.visits) times")
                 Divider()
@@ -37,17 +37,18 @@ struct NodeView: View {
                                            options: AttributedString.MarkdownParsingOptions(interpretedSyntax:
                                                 .inlineOnlyPreservingWhitespace)))
             }
-            .onAppear {
-                // update the visits count for this node
-                updateVisitCount(forNodeWithId: currentNodeId)
+                }
+                .onAppear {
+                    // update the visits count for this node
+                    updateVisitCount(forNodeWithId: currentNodeId)
+                }
+                .onChange(of: currentNodeId) { newNodeId in
+                    updateVisitCount(forNodeWithId: newNodeId)
+                }
+            } else {
+                Text("Node with id \(currentNodeId) not found; directed graph has a gap.")
+                
             }
-            .onChange(of: currentNodeId) { newNodeId in
-                updateVisitCount(forNodeWithId: newNodeId)
-            }
-        } else {
-            Text("Node with id \(currentNodeId) not found; directed graph has a gap.")
-            
-        }
     }
     
     
